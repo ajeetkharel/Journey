@@ -4,32 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:journey/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Required for async initialization
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(SignIn(prefs: prefs));
-}
 
-class SignIn extends StatelessWidget {
-  final SharedPreferences prefs;
-
-  const SignIn({super.key, required this.prefs});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sign In',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: prefs.getString('userName') == null
-          ? SignInPage(prefs: prefs)
-          : Home(prefs: prefs),
-    );
-  }
-}
 
 class SignInPage extends StatelessWidget {
   final SharedPreferences prefs;
@@ -120,8 +95,9 @@ class SignInPage extends StatelessWidget {
                     hintText: 'Name',
                     hintStyle: GoogleFonts.kulimPark(
                       textStyle: const TextStyle(
-                        color: Color.fromARGB(255, 138, 137, 137),
+                        color: Color(0xFFB0BEC5),
                         fontSize: 20,
+                        fontWeight: FontWeight.w500
                       ),
                     ),
                     border: UnderlineInputBorder(
