@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_quill/flutter_quill.dart';
+// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ignore: must_be_immutable
 class Journal extends StatefulWidget {
   final SharedPreferences prefs;
   String journalId;
@@ -214,6 +217,7 @@ class _JournalState extends State<Journal> {
   void saveOrUpdateJournal(String content, String title) {
     widget.prefs.setString("${widget.journalId}.content", content);
     widget.prefs.setString("${widget.journalId}.title", title);
+    widget.prefs.setString("${widget.journalId}.date", DateTime.now().toString());
 
     List<String> journeyList = widget.prefs.getStringList('journeyList') ?? [];
     if (!journeyList.contains(widget.journalId)) {
