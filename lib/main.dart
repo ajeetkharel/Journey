@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:journey/home.dart';
 import 'package:journey/signin.dart';
+// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {

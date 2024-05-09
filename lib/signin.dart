@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// ignore: depend_on_referenced_packages
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:journey/home.dart';
+// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -205,7 +207,7 @@ class SignInPage extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 30),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
