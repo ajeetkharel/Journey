@@ -17,7 +17,7 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   late List<String> journeyList;
   late List<String> displayedJourneyList;
   late Map<String, List<String>> groupedJourneyList;
@@ -27,12 +27,40 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    journeyList = widget.prefs.getStringList('journeyList') ?? [];
+    journeyList = widget.prefs.getStringList(
+            '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+        [];
     displayedJourneyList = List.from(journeyList);
     groupedJourneyList = _groupJourneys(displayedJourneyList);
     searchInputFocusNode = FocusNode();
     searchInputFocusNode.unfocus();
     controller = TextEditingController();
+
+    WidgetsBinding.instance.addObserver(this);
+    refreshList();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshList();
+    }
+  }
+
+  void refreshList() {
+    setState(() {
+      journeyList = widget.prefs.getStringList(
+              '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+          [];
+      displayedJourneyList = List.from(journeyList);
+      groupedJourneyList = _groupJourneys(displayedJourneyList);
+    });
   }
 
   Map<String, List<String>> _groupJourneys(List<String> list) {
@@ -166,8 +194,9 @@ class _HomeState extends State<Home> {
             : RefreshIndicator(
                 onRefresh: () async {
                   setState(() {
-                    journeyList =
-                        widget.prefs.getStringList('journeyList') ?? [];
+                    journeyList = widget.prefs.getStringList(
+                            '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+                        [];
                     displayedJourneyList = List.from(journeyList);
                     groupedJourneyList = _groupJourneys(displayedJourneyList);
                   });
@@ -424,15 +453,17 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.all(Radius.circular(50.0))),
             onPressed: () async {
               searchInputFocusNode.unfocus();
-              Object? result = await Navigator.push(
+              await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => Journal(prefs: widget.prefs)));
-              if (result != null && result == true) {
-                setState(() {
-                  journeyList = widget.prefs.getStringList('journeyList') ?? [];
-                });
-              }
+              setState(() {
+                journeyList = widget.prefs.getStringList(
+                        '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+                    [];
+                displayedJourneyList = List.from(journeyList);
+                groupedJourneyList = _groupJourneys(displayedJourneyList);
+              });
             },
             backgroundColor: const Color(0xFFf44336),
             child: const SizedBox(
