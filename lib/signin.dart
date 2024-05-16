@@ -6,18 +6,39 @@ import 'package:journey/home.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
   final SharedPreferences prefs;
 
-  SignInPage({super.key, required this.prefs});
+  const SignInPage({super.key, required this.prefs});
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
 
+class _SignInPageState extends State<SignInPage> {
   final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  late List<String> names;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserNames();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadUserNames();
+  }
+
+  void _loadUserNames() {
+    names = widget.prefs.getStringList('userNames') ?? [];
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<String> names = widget.prefs.getStringList('userNames') ?? [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -65,7 +86,7 @@ class SignInPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 90),
               ])),
           Center(
             child: Text(
@@ -83,54 +104,76 @@ class SignInPage extends StatelessWidget {
               ),
             ),
           ),
+          Text(
+            "Enter your name or select a saved profile",
+            style: GoogleFonts.kulimPark(
+              textStyle: const TextStyle(
+                fontSize: 15,
+                color: Color(0xFFB0BEC5),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Form(
               key: _formKey,
-              child: SizedBox(
-                height: 80,
-                child: TextFormField(
-                  controller: _nameController,
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    hintText: 'Name',
-                    hintStyle: GoogleFonts.kulimPark(
-                      textStyle: const TextStyle(
-                        color: Color(0xFFB0BEC5),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    cursorColor: Colors.white,
+                    decoration: InputDecoration(
+                      hintText: 'login as...',
+                      hintStyle: GoogleFonts.kulimPark(
+                        textStyle: const TextStyle(
+                            color: Color(0xFFB0BEC5),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFF455A64),
+                      errorStyle: GoogleFonts.kulimPark(
+                        textStyle: const TextStyle(
+                          color: Color.fromARGB(255, 255, 38, 0),
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                    border: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(0),
-                      borderSide: const BorderSide(
+                    style: GoogleFonts.kulimPark(
+                      textStyle: const TextStyle(
                         color: Colors.white,
+                        fontSize: 17,
                       ),
                     ),
-                    filled: true,
-                    fillColor: const Color(0xFF455A64),
-                    errorStyle: GoogleFonts.kulimPark(
-                      textStyle: const TextStyle(
-                        color: Color.fromARGB(255, 255, 38, 0),
-                        fontSize: 15,
-                      ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter or select a name';
+                      }
+                      return null;
+                    },
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (String value) {
+                      _nameController.text = value;
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return names.map((String name) {
+                        return PopupMenuItem<String>(
+                          value: name,
+                          child: Text(name),
+                        );
+                      }).toList();
+                    },
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: const Color(0xFFB0BEC5),
+                      size: names.isEmpty ? 0 : 30,
                     ),
                   ),
-                  style: GoogleFonts.kulimPark(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) => {_formKey.currentState!.validate()},
-                ),
+                ],
               ),
             ),
           ),
@@ -163,7 +206,7 @@ class SignInPage extends StatelessWidget {
                 ),
                 elevation: 5),
           ),
-          const SizedBox(height: 120),
+          const SizedBox(height: 90),
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Align(
@@ -171,9 +214,17 @@ class SignInPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    prefs.setString('userName', _nameController.text);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Home(prefs: prefs)));
+                    widget.prefs
+                        .setString('loggedInUserName', _nameController.text);
+                    if (!names.contains(_nameController.text)) {
+                      names.add(_nameController.text);
+                    }
+                    widget.prefs.setStringList('userNames', names);
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Home(prefs: widget.prefs)));
                   }
                 },
                 style: ElevatedButton.styleFrom(

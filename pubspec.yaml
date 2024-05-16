@@ -52,6 +52,8 @@ dev_dependencies:
   shared_preferences: ^2.0.0
   flutter_quill: ^9.3.10
   flutter_quill_extensions: ^9.3.4
+  intl: ^0.17.0
+  collection: ^1.15.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

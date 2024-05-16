@@ -88,7 +88,8 @@ class _JournalState extends State<Journal> {
                     }
                     setState(() => _isReadOnly = !_isReadOnly);
                     List<Map<String, dynamic>> journalContent = _controller.document.toDelta().toJson();
-                    saveOrUpdateJournal(jsonEncode(journalContent), journalTitle);         
+                    String journalShortDesc = _controller.document.toPlainText().length > 250 ? _controller.document.toPlainText().substring(0, 50) : _controller.document.toPlainText();
+                    saveOrUpdateJournal(jsonEncode(journalContent), journalTitle, journalShortDesc);         
                   },
                 ),
               ),
@@ -208,16 +209,18 @@ class _JournalState extends State<Journal> {
         onPressed: () {
           setState(() => _isReadOnly = !_isReadOnly);
           List<Map<String, dynamic>> journalContent = _controller.document.toDelta().toJson();
-          saveOrUpdateJournal(jsonEncode(journalContent), journalTitle);         
+          String journalShortDesc = _controller.document.toPlainText().length > 250 ? _controller.document.toPlainText().substring(0, 50) : _controller.document.toPlainText();
+          saveOrUpdateJournal(jsonEncode(journalContent), journalTitle, journalShortDesc);         
         },
       ),
     );
   }
   
-  void saveOrUpdateJournal(String content, String title) {
+  void saveOrUpdateJournal(String content, String title, String shortDesc) {
     widget.prefs.setString("${widget.journalId}.content", content);
     widget.prefs.setString("${widget.journalId}.title", title);
     widget.prefs.setString("${widget.journalId}.date", DateTime.now().toString());
+    widget.prefs.setString("${widget.journalId}.shortDesc", shortDesc.replaceAll('\n', ' '));
 
     List<String> journeyList = widget.prefs.getStringList('journeyList') ?? [];
     if (!journeyList.contains(widget.journalId)) {

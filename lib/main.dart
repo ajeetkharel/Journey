@@ -22,10 +22,10 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sign In',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF8800)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 38, 255)),
         useMaterial3: true,
       ),
-      home: prefs.getString('userName') == null
+      home: prefs.getString('loggedInUserName') == null
           ? SignInPage(prefs: prefs)
           : Home(prefs: prefs),
     );
