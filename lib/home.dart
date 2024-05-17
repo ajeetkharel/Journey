@@ -151,7 +151,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 ),
                 IconButton(
                   icon: Icon(
-                      (controller.text.isNotEmpty) ? Icons.search : Icons.close,
+                      (controller.text.isEmpty) ? Icons.search : Icons.close,
                       color: const Color(0xFFB0BEC5),
                       size: 25),
                   onPressed: () {
