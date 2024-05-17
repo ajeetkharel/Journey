@@ -46,7 +46,6 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
     controller = TextEditingController();
 
     WidgetsBinding.instance.addObserver(this);
-    refreshList();
   }
 
   @override
@@ -67,7 +66,12 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
       journeyList = widget.prefs.getStringList(
               '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
           [];
-      displayedJourneyList = List.from(journeyList);
+      displayedJourneyList = journeyList.where((journal) {
+        DateTime dateTime = DateTime.parse(
+            widget.prefs.getString("$journal.date") ??
+                DateTime.now().toString());
+        return isSameDay(_focusedDay, dateTime);
+      }).toList();
       groupedJourneyList = _groupJourneys(displayedJourneyList);
     });
   }
@@ -106,6 +110,14 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
                 prefs: widget.prefs,
               )),
     );
+  }
+
+  bool hasJournal(DateTime date) {
+    return journeyList.any((journal) {
+      DateTime dateTime = DateTime.parse(
+          widget.prefs.getString("$journal.date") ?? DateTime.now().toString());
+      return isSameDay(date, dateTime);
+    });
   }
 
   @override
@@ -210,11 +222,11 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
                   outsideTextStyle: TextStyle(color: Colors.white),
                   outsideDaysVisible: false,
                   todayDecoration: BoxDecoration(
-                    color: Color(0xFFf44336),
+                    color: Color.fromARGB(255, 41, 169, 228),
                     shape: BoxShape.circle,
                   ),
                   selectedDecoration: BoxDecoration(
-                    color: Color.fromARGB(255, 244, 139, 54),
+                    color: Color.fromARGB(255, 129, 81, 7),
                     shape: BoxShape.circle,
                   ),
                   todayTextStyle: TextStyle(color: Colors.white),
@@ -234,6 +246,16 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
                 ),
                 availableGestures: AvailableGestures.all,
                 calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, day, events) {
+                    if (hasJournal(day)) {
+                      return const Positioned(
+                        bottom: 8,
+                        child: Icon(Icons.circle, size: 5.0, color: Color.fromARGB(255, 255, 255, 255)),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                   headerTitleBuilder: (context, day) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -250,18 +272,21 @@ class _CalendarState extends State<Calendar> with WidgetsBindingObserver {
                             setState(() {
                               _selectedDay = DateTime.now();
                               _focusedDay = DateTime.now();
+                              refreshList();
                             });
                           },
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
-                              backgroundColor: const Color.fromARGB(255, 70, 88, 97),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 70, 88, 97),
                               fixedSize: const Size(40, 25),
                               padding: EdgeInsets.zero),
                           child: const Text('Today',
                               style: TextStyle(
-                                  color: Color.fromARGB(255, 167, 192, 204), fontSize: 12)),
+                                  color: Color.fromARGB(255, 167, 192, 204),
+                                  fontSize: 12)),
                         ),
                       ],
                     );

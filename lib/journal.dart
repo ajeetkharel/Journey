@@ -292,7 +292,7 @@ class _JournalState extends State<Journal> {
     widget.prefs.setString("${widget.journalId}.content", content);
     widget.prefs.setString("${widget.journalId}.title", title);
     widget.prefs
-        .setString("${widget.journalId}.date", DateTime.now().toString());
+        .setString("${widget.journalId}.date", DateTime.now().subtract(const Duration(days: 1)).toString());
     widget.prefs.setString(
         "${widget.journalId}.shortDesc", shortDesc.replaceAll('\n', ' '));
 
