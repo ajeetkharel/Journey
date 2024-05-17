@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:journey/home.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -199,7 +200,13 @@ class _JournalState extends State<Journal> {
                                 journeyList);
 
                             if (mounted) {
-                              Navigator.pop(context, true);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Home(prefs: widget.prefs),
+                                ),
+                              );
                             }
                           }
                         }
