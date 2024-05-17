@@ -114,7 +114,7 @@ class _JournalState extends State<Journal> {
                 style: GoogleFonts.kulimPark(
                   textStyle: const TextStyle(
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500),
                 ),
                 cursorColor: const Color(0xFFB0BEC5),
@@ -122,8 +122,8 @@ class _JournalState extends State<Journal> {
                     hintText: journalTitle,
                     hintStyle: GoogleFonts.kulimPark(
                       textStyle: const TextStyle(
-                          color: Color(0xFFB0BEC5),
-                          fontSize: 15,
+                          color: Color.fromARGB(255, 202, 213, 219),
+                          fontSize: 16,
                           fontWeight: FontWeight.w500),
                     ),
                     border: InputBorder.none,
@@ -191,11 +191,11 @@ class _JournalState extends State<Journal> {
 
                             List<
                                 String> journeyList = widget.prefs.getStringList(
-                                    '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+                                    '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
                                 [];
                             journeyList.remove(widget.journalId);
                             widget.prefs.setStringList(
-                                '${widget.prefs.getString('loggedInUserName')}.journeyList',
+                                '${widget.prefs.getString('loggedInUserId')}.journeyList',
                                 journeyList);
 
                             if (mounted) {
@@ -290,12 +290,12 @@ class _JournalState extends State<Journal> {
         "${widget.journalId}.shortDesc", shortDesc.replaceAll('\n', ' '));
 
     List<String> journeyList = widget.prefs.getStringList(
-            '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+            '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
         [];
     if (!journeyList.contains(widget.journalId)) {
       journeyList.add(widget.journalId);
       widget.prefs.setStringList(
-          '${widget.prefs.getString('loggedInUserName')}.journeyList',
+          '${widget.prefs.getString('loggedInUserId')}.journeyList',
           journeyList);
     }
   }

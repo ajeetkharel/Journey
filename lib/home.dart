@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:journey/calendar.dart';
 import 'package:journey/journal.dart';
+import 'package:journey/profile.dart';
 import 'package:journey/signin.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     journeyList = widget.prefs.getStringList(
-            '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+            '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
         [];
     displayedJourneyList = List.from(journeyList);
     groupedJourneyList = _groupJourneys(displayedJourneyList);
@@ -56,7 +57,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void refreshList() {
     setState(() {
       journeyList = widget.prefs.getStringList(
-              '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+              '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
           [];
       displayedJourneyList = List.from(journeyList);
       groupedJourneyList = _groupJourneys(displayedJourneyList);
@@ -118,7 +119,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               color: const Color(0xFF455A64),
               borderRadius: BorderRadius.circular(10),
             ),
-            margin: const EdgeInsets.fromLTRB(0, 5, 0, 0),
             child: Row(
               children: [
                 Padding(
@@ -169,7 +169,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${widget.prefs.getString("loggedInUserName")!.split(" ")[0]}, Write your Story',
+                      '${widget.prefs.getString("${widget.prefs.getString("loggedInUserId") ?? ""}.name")!.split(" ")[0]}, Write your Story',
                       style: GoogleFonts.kulimPark(
                         textStyle: const TextStyle(
                             color: Colors.white,
@@ -195,7 +195,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 onRefresh: () async {
                   setState(() {
                     journeyList = widget.prefs.getStringList(
-                            '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+                            '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
                         [];
                     displayedJourneyList = List.from(journeyList);
                     groupedJourneyList = _groupJourneys(displayedJourneyList);
@@ -285,7 +285,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                             const EdgeInsets.only(top: 8.0),
                                         child: Text(
                                           shortDescription,
-                                          maxLines: 3,
+                                          maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.kulimPark(
                                             textStyle: const TextStyle(
@@ -345,7 +345,20 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation1, animation2) =>
+                          Calendar(prefs: widget.prefs),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      transitionDuration: const Duration(milliseconds: 200),
+                    ),
+                  );
+                },
                 child: const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -381,7 +394,20 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation1, animation2) =>
+                          ProfilePage(prefs: widget.prefs),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      transitionDuration: const Duration(milliseconds: 200),
+                    ),
+                  );
+                },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -459,7 +485,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       builder: (context) => Journal(prefs: widget.prefs)));
               setState(() {
                 journeyList = widget.prefs.getStringList(
-                        '${widget.prefs.getString('loggedInUserName')}.journeyList') ??
+                        '${widget.prefs.getString('loggedInUserId')}.journeyList') ??
                     [];
                 displayedJourneyList = List.from(journeyList);
                 groupedJourneyList = _groupJourneys(displayedJourneyList);

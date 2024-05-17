@@ -18,27 +18,28 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  late List<String> names;
+  late List<String> userIds;
+  late List<String> userNames;
 
   @override
   void initState() {
     super.initState();
-    _loadUserNames();
+    _loadUserIds();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadUserNames();
+    _loadUserIds();
   }
 
-  void _loadUserNames() {
-    names = widget.prefs.getStringList('userNames') ?? [];
+  void _loadUserIds() {
+    userIds = widget.prefs.getStringList('userIds') ?? [];
+    userNames = widget.prefs.getStringList('userNames') ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> names = widget.prefs.getStringList('userNames') ?? [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -160,7 +161,7 @@ class _SignInPageState extends State<SignInPage> {
                       _nameController.text = value;
                     },
                     itemBuilder: (BuildContext context) {
-                      return names.map((String name) {
+                      return userNames.map((String name) {
                         return PopupMenuItem<String>(
                           value: name,
                           child: Text(name),
@@ -170,7 +171,7 @@ class _SignInPageState extends State<SignInPage> {
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: const Color(0xFFB0BEC5),
-                      size: names.isEmpty ? 0 : 30,
+                      size: userNames.isEmpty ? 0 : 30,
                     ),
                   ),
                 ],
@@ -214,12 +215,20 @@ class _SignInPageState extends State<SignInPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    widget.prefs
-                        .setString('loggedInUserName', _nameController.text);
-                    if (!names.contains(_nameController.text)) {
-                      names.add(_nameController.text);
+                    if (!userNames.contains(_nameController.text)) {
+                      userNames.add(_nameController.text);
+                      String userId =
+                          DateTime.now().millisecondsSinceEpoch.toString();
+                      userIds.add(userId);
+                      widget.prefs.setStringList('userIds', userIds);
+                      widget.prefs
+                          .setString("$userId.name", _nameController.text);
+                      widget.prefs.setString('loggedInUserId', userId);
+                      widget.prefs.setStringList('userNames', userNames);
+                    } else {
+                      widget.prefs.setString('loggedInUserId',
+                          userIds[userNames.indexOf(_nameController.text)]);
                     }
-                    widget.prefs.setStringList('userNames', names);
 
                     Navigator.push(
                         context,

@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 38, 255)),
         useMaterial3: true,
       ),
-      home: prefs.getString('loggedInUserName') == null
+      home: prefs.getString('loggedInUserId') == null
           ? SignInPage(prefs: prefs)
           : Home(prefs: prefs),
     );
