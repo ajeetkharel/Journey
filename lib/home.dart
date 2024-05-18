@@ -155,8 +155,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       color: const Color(0xFFB0BEC5),
                       size: 25),
                   onPressed: () {
-                    // clear the search input
                     controller.clear();
+                    performSearch('');
                   },
                 ),
               ],
